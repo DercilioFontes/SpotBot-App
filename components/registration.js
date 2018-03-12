@@ -1,5 +1,15 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableHighlight, Button, ActivityIndicator } from 'react-native';
+import { 
+  StyleSheet, 
+  Text, 
+  View, 
+  TextInput, 
+  TouchableHighlight, 
+  Button, 
+  ActivityIndicator,
+  AsyncStorage } from 'react-native';
+
+  // let STORAGE_KEY = 'id_token'
 
 export default class Registration extends React.Component {
   constructor(props) {
@@ -14,20 +24,41 @@ export default class Registration extends React.Component {
     }
   }
 
-  onLoginSubmited() {
+  // async _onValueChange(item, selectedValue) {
+  //   try {
+  //     await AsyncStorage.setItem(item, selectedValue)
+  //   } catch (err) {
+  //     console.log('AsyncStorage error: ' + error.message)
+  //   }
+  // }
+
+  onLoginSubmitted() {
+    // const DEMO_TOKEN = await AsyncStorage.getItem(STORAGE_KEY)
+    console.log(JSON.stringify({
+      user: {
+        name: this.state.username,
+        license_plate: this.state.licensePlate,
+        email: this.state.email,
+        password: this.state.password,
+        password_confirmation: this.state.confirmPassword
+      }
+    }))
     this.setState({showProgress: true})
     fetch('https://spot-bot-server.herokuapp.com/users', {
       method: 'POST',
       headers: {
-        Accept: 'application/json',
+        'Accept': 'application/json',
         'Content-Type': 'aplication/json',
+        // 'Authorization': 'Bearer' + DEMO_TOKEN
       },
       body: JSON.stringify({
+        user: {
           name: this.state.username,
           license_plate: this.state.licensePlate,
           email: this.state.email,
           password: this.state.password,
           password_confirmation: this.state.confirmPassword
+        }
       }),
     })
     .then((response) => {
@@ -42,8 +73,9 @@ export default class Registration extends React.Component {
     .then((response) => {
       return response.json()
     })
-    .then((results) => {
-      console.log(results)
+    .then((responseData) => {
+      console.log(responseData)
+      // this._onValueChange(STORAGE_KEY, responseData.id_token)
     })
     .catch((err) => {
       this.setState(err)
@@ -84,7 +116,7 @@ export default class Registration extends React.Component {
         placeholder={this.state.confirmPassword}
         />
         <TouchableHighlight style={styles.button}>
-        <Button style={styles.button} title='Submit' onPress={this.onLoginSubmited.bind(this)}/></TouchableHighlight>
+        <Button style={styles.button} title='Submit' onPress={this.onLoginSubmitted.bind(this)}/></TouchableHighlight>
 
         <ActivityIndicator
         animating={this.state.showProgress}
